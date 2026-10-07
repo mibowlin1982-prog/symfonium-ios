@@ -20,7 +20,7 @@ class SymfoniumAudioService extends ChangeNotifier {
     _audioPlayer = AudioPlayer();
     _audioPlayer.playbackEventStream.listen((event) {
       _positionController.add(event.updatePosition);
-      _playingController.add(event.playing);
+      _playingController.add(_audioPlayer.playing);
     });
     _audioHandler = await AudioService.init(
       builder: () => _MyAudioHandler(_audioPlayer),
