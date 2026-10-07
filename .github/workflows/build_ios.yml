@@ -21,7 +21,21 @@ jobs:
       - name: iOS Pods
         run: cd ios && pod install --repo-update || true
       - name: Build iOS (no-codesign)
-        run: flutter build ios --release --no-codesign
+        run: |
+          flutter build ios --release --no-codesign --verbose 2>&1 | tail -20
+          # If flutter build fails due to signing, force xcodebuild with no-sign
+          if [ ! -d "build/ios/iphoneos/Runner.app" ]; then
+            xcodebuild -workspace ios/Runner.xcworkspace \
+              -scheme Runner \
+              -configuration Release \
+              -sdk iphoneos \
+              -derivedDataPath build/ios \
+              -allowProvisioningUpdates \
+              CODE_SIGNING_ALLOWED=NO \
+              CODE_SIGNING_REQUIRED=NO \
+              CODE_SIGN_IDENTITY="" \
+              PROVISIONING_PROFILE=""
+          fi
       - name: Package .ipa
         run: |
           mkdir -p build/ios/ipa
