@@ -25,6 +25,7 @@ jobs:
       - name: Package .ipa
         run: |
           mkdir -p build/ios/ipa
+          mkdir -p Payload
           cp -R build/ios/iphoneos/Runner.app Payload/
           zip -r build/ios/ipa/symfonium.ipa Payload/
           rm -rf Payload
