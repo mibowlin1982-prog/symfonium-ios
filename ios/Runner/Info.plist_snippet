@@ -1,0 +1,10 @@
+<!-- ios/Runner/Info.plist — 背景音訊與鎖定畫面控制 -->
+<key>UIBackgroundModes</key>
+<array>
+    <string>audio</string>
+    <string>fetch</string>
+</array>
+<key>UIRequiredDeviceCapabilities</key>
+<array>
+    <string>audio-playback</string>
+</array>

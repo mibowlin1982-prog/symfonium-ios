@@ -1,0 +1,35 @@
+name: Build Symfonium iOS (.ipa) — Cloud Build
+
+on:
+  push:
+    branches: [main, release/*]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-ios:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: stable
+          cache: true
+      - name: Dependencies
+        run: flutter pub get
+      - name: iOS Pods
+        run: cd ios && pod install --repo-update || true
+      - name: Build iOS (no-codesign)
+        run: flutter build ios --release --no-codesign
+      - name: Package .ipa
+        run: |
+          mkdir -p build/ios/ipa
+          cp -R build/ios/iphoneos/Runner.app Payload/
+          zip -r build/ios/ipa/symfonium.ipa Payload/
+          rm -rf Payload
+      - uses: actions/upload-artifact@v4
+        with:
+          name: symfonium-ios-ipa-unsigned
+          path: build/ios/ipa/*.ipa
+          retention-days: 30
