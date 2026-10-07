@@ -1,17 +1,27 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:flutter/material.dart';
+import 'dart:async';
 
 class SymfoniumAudioService extends ChangeNotifier {
   late AudioPlayer _audioPlayer;
   late AudioHandler _audioHandler;
+  final _positionController = StreamController<Duration>.broadcast();
+  final _playingController = StreamController<bool>.broadcast();
 
   bool get isPlaying => _audioPlayer.playing;
+  bool get playing => _audioPlayer.playing;
   Duration get position => _audioPlayer.position;
   Duration get duration => _audioPlayer.duration ?? Duration.zero;
+  Stream<Duration> get positionStream => _positionController.stream;
+  Stream<bool> get playingStream => _playingController.stream;
 
   Future<void> initialize() async {
     _audioPlayer = AudioPlayer();
+    _audioPlayer.playbackEventStream.listen((event) {
+      _positionController.add(event.updatePosition);
+      _playingController.add(event.playing);
+    });
     _audioHandler = await AudioService.init(
       builder: () => _MyAudioHandler(_audioPlayer),
       config: const AudioServiceConfig(
@@ -46,6 +56,10 @@ class SymfoniumAudioService extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> seek(Duration position) async {
+    await _audioPlayer.seek(position);
+  }
+
   Future<void> stop() async {
     await _audioPlayer.stop();
     notifyListeners();
@@ -53,6 +67,8 @@ class SymfoniumAudioService extends ChangeNotifier {
 
   void disposePlayer() {
     _audioPlayer.dispose();
+    _positionController.close();
+    _playingController.close();
   }
 }
 
