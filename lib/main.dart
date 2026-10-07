@@ -387,18 +387,3 @@ class PlayerBottomSheet extends StatelessWidget {
     return '$minutes:$seconds';
   }
 }
-
-/// 音樂檔案資料模型
-class MusicFile {
-  final String name;
-  final String relativePath;
-  final int size;
-  final String modifiedTime;
-
-  MusicFile({
-    required this.name,
-    required this.relativePath,
-    required this.size,
-    required this.modifiedTime,
-  });
-}

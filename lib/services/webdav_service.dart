@@ -1,5 +1,19 @@
 import 'dart:convert';
 
+class MusicFile {
+  final String name;
+  final String relativePath;
+  final int size;
+  final String modifiedTime;
+
+  MusicFile({
+    required this.name,
+    required this.relativePath,
+    required this.size,
+    required this.modifiedTime,
+  });
+}
+
 class WebDAVMusicService {
   final String serverUrl;
   final String username;
@@ -24,12 +38,23 @@ class WebDAVMusicService {
     return {'Authorization': 'Basic $encoded'};
   }
 
-  /// 模擬目錄讀取（實際專案使用 webdav_client 的 PROPFIND）
-  Future<List<String>> listMusicFiles(String remotePath) async {
+  /// 讀取音樂目錄（實際專案使用 webdav_client 的 PROPFIND）
+  Future<List<MusicFile>> listMusicFiles(String remotePath) async {
     // 回傳範例檔案清單（實際專案替換為 webdav_client.readProps()）
+    final now = DateTime.now().toIso8601String();
     return [
-      buildStreamUrl('$remotePath/01_intro.flac'),
-      buildStreamUrl('$remotePath/02_main_track.mp3'),
+      MusicFile(
+        name: '01_intro.flac',
+        relativePath: '$remotePath/01_intro.flac',
+        size: 45000000,
+        modifiedTime: now,
+      ),
+      MusicFile(
+        name: '02_main_track.mp3',
+        relativePath: '$remotePath/02_main_track.mp3',
+        size: 12000000,
+        modifiedTime: now,
+      ),
     ];
   }
 
